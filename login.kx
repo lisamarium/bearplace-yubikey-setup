@@ -1,0 +1,34 @@
+$macro:import {crypto};
+$macro:import {env};
+$macro:import {os};
+$macro:import {yubikey};
+
+$macro:define {
+    no_yubikey_detected(e) -- \
+        report("No key was found", 0x0A),
+        details(e),
+        exit();
+    
+    successful_login(user) -- \
+        echo("Successfully logged in as ${user.full_name}", 0x0A);
+    
+    failed_login(e) -- report("Could not log in", 0x0A), details(e);
+}
+
+sensor = scan_ports@yubikey() ?? Sensor@yubikey !! no_yubikey_detected;
+
+key = load@env("FP_KEY");
+username = load@env("USERNAME");
+
+log("Logging in as ${username}");
+echo("Please press your Yubikey fingerprint sensor.", 0x0A);
+buffer = sensor:acquire_fingerprint();
+[nonce / tag / cipher_data] = AES:dump@crypto(buffer);
+
+cipher = AES:new_cipher@crypto(key, "eax", nonce);
+data = cipher:decrypt(cipher_data);
+
+os.login(username, data) ?? successful_login !! failed_login;
+
+# ensures that decrypted 'data' is reset to null bytes in memory
+$macro:nullset {&ref data};
