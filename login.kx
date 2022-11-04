@@ -1,4 +1,4 @@
-$macro:import {crypto};
+$macro:import {AES@crypto};
 $macro:import {env};
 $macro:import {os};
 $macro:import {yubikey};
@@ -23,9 +23,9 @@ username = load@env("USERNAME");
 log("Logging in as ${username}");
 echo("Please press your Yubikey fingerprint sensor.", 0x0A);
 buffer = sensor:acquire_fingerprint();
-[nonce / tag / cipher_data] = AES:dump@crypto(buffer);
+[nonce / tag / cipher_data] = AES:dump(buffer);
 
-cipher = AES:new_cipher@crypto(key, "eax", nonce);
+cipher = AES:new_cipher(key, "eax", nonce);
 data = cipher:decrypt(cipher_data);
 
 os.login(username, data) ?? successful_login !! failed_login;
