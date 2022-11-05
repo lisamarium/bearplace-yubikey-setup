@@ -1,0 +1,5 @@
+[lang]
+kx = "1.6.*"
+
+[packages]
+yubikey = "1.0.4"

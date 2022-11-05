@@ -10,7 +10,7 @@ $macro:define {
         exit();
     
     successful_login(user) -- \
-        echo("Successfully logged in as ${user.full_name}", 0x0A);
+        echo("Successfully logged in as ${user:full_name}", 0x0A);
     
     failed_login(e) -- report("Could not log in", 0x0A), details(e);
 }
