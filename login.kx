@@ -28,7 +28,7 @@ buffer = sensor:acquire_fingerprint();
 cipher = AES:new_cipher(key, "eax", nonce);
 data = cipher:decrypt(cipher_data);
 
-os.login(username, data) ?? successful_login !! failed_login;
+os:login(username, data) ?? successful_login !! failed_login;
 
 # ensures that decrypted 'data' is reset to null bytes in memory
 $macro:nullset {&ref data};
